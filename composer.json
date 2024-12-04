@@ -1,0 +1,16 @@
+{
+    "name": "woo/weight-report",
+    "description": "This is custom module for woocommerce order weight calculation report",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Woo\\": "includes/"
+        },
+        "classmap" : ["includes/"]
+    },
+    "authors": [
+        {
+            "name": "Hitesh Talpada"
+        }
+    ]
+}

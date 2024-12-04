@@ -1,0 +1,222 @@
+# Copyright (C) 2024 Imaginate Solutions
+# This file is distributed under the GPL2.
+msgid ""
+msgstr ""
+"Project-Id-Version: Woo Order Weight Report 1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/woo-order-weight-report\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-10-29T11:10:16+05:30\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.11.0\n"
+"X-Domain: woo-weight-report\n"
+
+#. Plugin Name of the plugin
+#: woo-order-weight-report.php
+msgid "Woo注文重量レポート"
+msgstr ""
+
+#. Description of the plugin
+#: woo-order-weight-report.php
+msgid "This is custom module for woocommerce order weight calculation report."
+msgstr ""
+
+#. Author of the plugin
+#: woo-order-weight-report.php
+msgid "Imaginate Solutions"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:69
+#: includes/admin/class-weightreport-setting.php:70
+msgid "体重レポート"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:104
+msgid "ページごとの項目"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:128
+msgid "注文"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:183
+#: includes/admin/class-woo-order-list-table.php:102
+#: includes/admin/class-woo-order-list-table.php:201
+#: includes/admin/class-woo-order-list-table.php:404
+#: includes/admin/class-woo-order-list-table.php:562
+msgid "ナンス検証に失敗しました。ページを更新して、もう一度お試しください。"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:197
+#: includes/admin/class-woo-order-list-table.php:106
+msgid "注文番号:"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:198
+#: includes/admin/class-woo-order-list-table.php:107
+msgid "支払日"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:199
+#: includes/admin/class-woo-order-list-table.php:108
+msgid "銀オンス"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:200
+#: includes/admin/class-woo-order-list-table.php:109
+msgid "シルバーグラム"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:201
+#: includes/admin/class-woo-order-list-table.php:110
+msgid "金オンス"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:202
+#: includes/admin/class-woo-order-list-table.php:111
+msgid "ゴールドグラム"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:203
+#: includes/admin/class-woo-order-list-table.php:112
+msgid "プラチナオンス"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:204
+#: includes/admin/class-woo-order-list-table.php:113
+msgid "プラチナグラム"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:205
+#: includes/admin/class-woo-order-list-table.php:114
+msgid "銅オンス"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:206
+#: includes/admin/class-woo-order-list-table.php:115
+msgid "銅のグラム"
+msgstr ""
+
+#: includes/admin/class-weightreport-testing-order.php:46
+#: includes/admin/class-woo-order-list-table.php:120
+msgid "テストの順序"
+msgstr ""
+
+#: includes/admin/class-weightreport-testing-order.php:68
+msgid "これはテスト注文です"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:119
+msgid "製品"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:223
+msgid "名前"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:224
+msgid "SKU"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:225
+msgid "量"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:226
+msgid "重さ"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:378
+msgid "ビュー"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:526
+msgid "金"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:527
+msgid "銀"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:528
+msgid "プラチナ"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:529
+msgid "銅"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:534
+msgid "金"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:535
+msgid "銀"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:536
+msgid "白金"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:537
+msgid "銅"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:574
+msgid "範囲を選択してください"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:576
+msgid "当月"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:579
+msgid "過去 15 日間"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:582
+msgid "先月"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:585
+msgid "前四半期"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:588
+msgid "去年"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:591
+msgid "今年"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:594
+msgid "カスタム範囲"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:597
+msgid "カスタム月"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:601
+msgid "開始日"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:604
+msgid "終了日"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:617
+msgid "フィルター"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:628
+msgid "PDF 生成"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:716
+msgid "総重量:"
+msgstr ""

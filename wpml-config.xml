@@ -1,0 +1,9 @@
+<wpml-config>
+    <plugins>
+        <plugin name="Woo Order Weight Report">
+            <name>woo-order-weight-report</name>
+            <text-domain>woo-weight-report</text-domain>
+            <locale-path>/languages</locale-path>
+        </plugin>
+    </plugins>
+</wpml-config>
