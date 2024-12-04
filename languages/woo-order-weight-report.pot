@@ -1,0 +1,222 @@
+# Copyright (C) 2024 Imaginate Solutions
+# This file is distributed under the GPL2.
+msgid ""
+msgstr ""
+"Project-Id-Version: Woo Order Weight Report 1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/woo-order-weight-report\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-10-28T12:37:27+05:30\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.11.0\n"
+"X-Domain: woo-weight-report\n"
+
+#. Plugin Name of the plugin
+#: woo-order-weight-report.php
+msgid "Woo Order Weight Report"
+msgstr ""
+
+#. Description of the plugin
+#: woo-order-weight-report.php
+msgid "This is custom module for woocommerce order weight calculation report."
+msgstr ""
+
+#. Author of the plugin
+#: woo-order-weight-report.php
+msgid "Imaginate Solutions"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:68
+#: includes/admin/class-weightreport-setting.php:69
+msgid "Weight Report"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:103
+msgid "Items per page"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:127
+msgid "Orders"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:182
+#: includes/admin/class-woo-order-list-table.php:102
+#: includes/admin/class-woo-order-list-table.php:201
+#: includes/admin/class-woo-order-list-table.php:398
+#: includes/admin/class-woo-order-list-table.php:556
+msgid "Nonce verification failed. Please refresh the page and try again."
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:196
+#: includes/admin/class-woo-order-list-table.php:106
+msgid "Order No:"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:197
+#: includes/admin/class-woo-order-list-table.php:107
+msgid "Date Paid"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:198
+#: includes/admin/class-woo-order-list-table.php:108
+msgid "Silver Ounces"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:199
+#: includes/admin/class-woo-order-list-table.php:109
+msgid "Silver Grams"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:200
+#: includes/admin/class-woo-order-list-table.php:110
+msgid "Gold Ounces"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:201
+#: includes/admin/class-woo-order-list-table.php:111
+msgid "Gold Grams"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:202
+#: includes/admin/class-woo-order-list-table.php:112
+msgid "Platinum Ounces"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:203
+#: includes/admin/class-woo-order-list-table.php:113
+msgid "Platinum Grams"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:204
+#: includes/admin/class-woo-order-list-table.php:114
+msgid "Copper Ounces"
+msgstr ""
+
+#: includes/admin/class-weightreport-setting.php:205
+#: includes/admin/class-woo-order-list-table.php:115
+msgid "Copper Grams"
+msgstr ""
+
+#: includes/admin/class-weightreport-testing-order.php:46
+#: includes/admin/class-woo-order-list-table.php:120
+msgid "Test Order"
+msgstr ""
+
+#: includes/admin/class-weightreport-testing-order.php:68
+msgid "This is a test order"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:119
+msgid "Products"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:223
+msgid "Name"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:224
+msgid "SKU"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:225
+msgid "Quantity"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:226
+msgid "Weight"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:372
+msgid "View"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:520
+msgid "金"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:521
+msgid "銀"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:522
+msgid "プラチナ"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:523
+msgid "銅"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:528
+msgid "Gold"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:529
+msgid "Silver"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:530
+msgid "Platinum"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:531
+msgid "Copper"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:568
+msgid "Please select a range"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:570
+msgid "Current Month"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:573
+msgid "Last 15 Days"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:576
+msgid "Last Month"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:579
+msgid "Last Quarter"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:582
+msgid "Last Year"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:585
+msgid "Current Year"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:588
+msgid "Custom Range"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:591
+msgid "Custom Month"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:595
+msgid "Start Date"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:598
+msgid "End Date"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:611
+msgid "Filter"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:622
+msgid "PDF Ganerate"
+msgstr ""
+
+#: includes/admin/class-woo-order-list-table.php:710
+msgid "Total Weight:"
+msgstr ""
