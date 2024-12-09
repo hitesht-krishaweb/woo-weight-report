@@ -155,6 +155,53 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
+
+    if( 'woocommerce_page_woo-under-review' === pagenow ){
+        const reviewaction = document.querySelectorAll('.review-action');
+        console.log(ajax_object);
+         // Attach click event listener to all date elements.
+         reviewaction.forEach(dateElement => {
+            dateElement.addEventListener('click', async (e) => {
+                const id = e.target.getAttribute('data-id');
+                const targetElement = e.target;
+                targetElement.setAttribute('disabled', true);
+                const value = await swal({
+                    title: "Under review order.",
+                    text: "Remove under review order from list.",
+                    buttons: true,
+                    dangerMode: false,
+                });
+
+                // Proceed if the value is valid.
+                if (value) {
+                    try {
+                        // Send the AJAX request using fetch.
+                        const response = await fetch(ajaxurl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                            },
+                            body: new URLSearchParams({
+                                action: 'change_order_metaupdate',
+                                orderid: id,
+                                _ajax_nonce: changedate.nonce
+                            })
+                        });
+                        const data = await response.json();
+                        // Check if update was successfull.
+                        if (data.success) {
+                            console.log(data);
+                            targetElement.setAttribute('disabled', true);
+                        }else {
+                            console.log(data);
+                        }
+                    } catch (error) {
+                        console.error('AJAX request failed:', error);
+                    }
+                }
+            });
+        });
+    }
     
     // Loop through each element and toggle the 'hidden' class.
     elements.forEach(element => {
