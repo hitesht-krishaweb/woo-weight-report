@@ -130,6 +130,10 @@ class Woo_Order_List_Table extends \WP_List_Table {
 			);
 		endif;
 
+		if ( true === $this->get_under_review() && ! isset( $getdata['pdf'] ) && ! array_key_exists( 'pdf', $getdata ) ) :
+			$columns['review'] = esc_html__( 'Review Action', 'woo-weight-report' );
+		endif;
+
 		return $columns;
 	}
 
@@ -334,7 +338,7 @@ class Woo_Order_List_Table extends \WP_List_Table {
 			$weight_lable   = $this->get_metalname_by_lang();
 
 			// Test order status variable.
-			$_test_order  = get_post_meta( $order->ID, '_test_order', true );
+			$under_review = get_post_meta( $order->ID, '_status_under_review', true );
 			$order_status = $order_data->get_status();
 
 			$silver_oz     = $this->get_weight_by_metal( $weight_lable['silver'], 'ounces', $product_weight );
@@ -346,7 +350,7 @@ class Woo_Order_List_Table extends \WP_List_Table {
 			$copper_oz     = $this->get_weight_by_metal( $weight_lable['copper'], 'ounces', $product_weight );
 			$copper_gram   = $this->get_weight_by_metal( $weight_lable['copper'], 'grams', $product_weight );
 
-			if ( 'yes' !== $_test_order && ( 'processing' === $order_status || 'cancelled' === $order_status ) ) :
+			if ( 'processing' === $order_status || 'cancelled' === $order_status || 'on-hold' === $order_status || 'completed' === $order_status ) :
 				// Accumulate the total weights for each metal in both ounces and grams.
 				$this->total_silver_oz     += $silver_oz;
 				$this->total_silver_gram   += $silver_gram;
@@ -428,6 +432,23 @@ class Woo_Order_List_Table extends \WP_List_Table {
 			'<button class="button toggle-view" data-id="%s">%s</button>',
 			esc_html( $item['orderid'] ),
 			esc_html__( 'View', 'woo-weight-report' )
+		);
+
+		return sprintf( '%s ', $toggle_btn );
+	}
+
+	/**
+	 * Render the reviews column with a action button.
+	 *
+	 * @param array $item The data for the current item in the list table.
+	 * @return string The HTML for the order ID column with a link to edit the order.
+	 */
+	public function column_review( $item ) {
+		// Define the toggle for the order ID.
+		$toggle_btn = sprintf(
+			'<button class="button review-action" data-id="%s">%s</button>',
+			esc_html( $item['orderid'] ),
+			esc_html__( 'Accept', 'woo-weight-report' )
 		);
 
 		return sprintf( '%s ', $toggle_btn );
@@ -587,7 +608,7 @@ class Woo_Order_List_Table extends \WP_List_Table {
 
 		$args = array(
 			'post_type'      => 'shop_order',
-			'post_status'    => array( 'wc-cancelled' ),
+			'post_status'    => 'any',
 			'posts_per_page' => $per_page,
 			'paged'          => $current_page,
 			'meta_query'     => array( //phpcs:ignore
@@ -847,6 +868,7 @@ class Woo_Order_List_Table extends \WP_List_Table {
 			<td><strong><?php echo esc_html( $this->total_copper_oz ? $this->total_copper_oz : '0' ); ?> oz</strong></td>
 			<td><strong><?php echo esc_html( $this->total_copper_gram ? $this->total_copper_gram : '0' ); ?> grams</strong></td>
 			<?php echo ( ! isset( $getdata['pdf'] ) && ! array_key_exists( 'pdf', $getdata ) ) ? '<td class="empty"></td>' : ''; ?>
+			<?php echo ( true === $this->get_under_review() && ! isset( $getdata['pdf'] ) && ! array_key_exists( 'pdf', $getdata ) ) ? '<td class="empty"></td>' : ''; ?>
 		</tr>
 		<?php
 	}
@@ -894,7 +916,7 @@ class Woo_Order_List_Table extends \WP_List_Table {
 			} elseif (isset($_GET['post_status'])) {
 				$extra_checks = $wpdb->prepare(' AND post_status = %s', sanitize_text_field($_GET['post_status']));
 			} else {
-				$extra_checks .= $wpdb->prepare(" AND post_status IN (%s, %s)", $allowed_statuses[0], $allowed_statuses[1] );
+				$extra_checks .= $wpdb->prepare(" AND post_status IN (%s)", $allowed_statuses[0] );
 			}
 
 			$months = $wpdb->get_results(

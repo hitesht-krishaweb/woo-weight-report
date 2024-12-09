@@ -34,9 +34,49 @@ class WeightReport_Editing_Order {
 	public function __construct() {
 		// Add admin actions only for users with 'manage_options' capability.
 		if ( current_user_can( 'manage_options' ) ) {
+			add_action( 'add_meta_boxes', array( $this, 'weightreport_add_under_review_meta_box' ) );
 			add_action( 'admin_notices', array( $this, 'add_custom_notice_and_button' ) );
 			add_action( 'wp_ajax_handle_custom_admin_action', array( $this, 'handle_custom_admin_action' ) );
 		}
+	}
+
+	/**
+	 * Adds the Test Order meta box to WooCommerce order edit pages.
+	 *
+	 * @since 1.0.0
+	 */
+	public function weightreport_add_under_review_meta_box() {
+		add_meta_box(
+			'weightreport_under_review_meta_box',
+			__( 'Under Review', 'woo-weight-report' ),
+			array( $this, 'weightreport_under_review_meta_box_callback' ),
+			'shop_order',
+			'side',
+			'high'
+		);
+	}
+
+
+	/**
+	 * Callback function for displaying the Test Order meta box.
+	 *
+	 * Displays a checkbox allowing admins to mark the order as a test order.
+	 *
+	 * @param WP_Post $post The post object for the current WooCommerce order.
+	 */
+	public function weightreport_under_review_meta_box_callback( $post ) {
+		$is_under_review = get_post_meta( $post->ID, '_status_under_review', true );
+		?>
+		<label for="order_checkbox">
+			<input type="checkbox" id="order_checkbox" name="review_status" value="<?php echo esc_attr( $is_under_review ); ?>" <?php checked( $is_under_review, 'yes' ); ?> />
+			<?php
+			esc_html_e( 'This order is a under review.', 'woo-weight-report' );
+			?>
+		</label>
+		<p>
+		<?php
+		submit_button( __( 'Submit', 'woo-weight-report' ), 'primary', 'submit-form', false );
+		echo '</p>';
 	}
 
 	/**

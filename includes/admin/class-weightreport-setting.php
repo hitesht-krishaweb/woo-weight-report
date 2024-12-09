@@ -37,9 +37,12 @@ class WeightReport_Setting extends WeightReport_Admin {
 		add_action( 'admin_init', array( $this, 'ganerate_order_table_pdf' ) );
 		add_action( 'wp_ajax_change_order_paiddate', array( $this, 'handle_change_order_paiddate' ) );
 		add_action( 'wp_ajax_nopriv_change_order_paiddate', array( $this, 'handle_change_order_paiddate' ) );
+		add_action( 'wp_ajax_change_order_metaupdate', array( $this, 'handle_change_order_metaupdate' ) );
+		add_action( 'wp_ajax_nopriv_change_order_metaupdate', array( $this, 'handle_change_order_metaupdate' ) );
 		add_action( 'woocommerce_order_status_processing_to_cancelled', array( $this, 'wc_update_custom_meta' ) );
 		add_action( 'woocommerce_order_status_on-hold_to_cancelled', array( $this, 'wc_update_custom_meta' ) );
 		add_action( 'woocommerce_order_status_cancelled_to_processing', array( $this, 'wc_update_custom_meta_blacklist' ) );
+		add_action( 'save_post_shop_order', array( $this, 'is_first_edit_order' ), 10, 1 );
 	}
 
 	/**
@@ -372,6 +375,34 @@ class WeightReport_Setting extends WeightReport_Admin {
 	}
 
 	/**
+	 * Order Meta Update AJAX.
+	 *
+	 * @since 1.0.0
+	 */
+	public function handle_change_order_metaupdate() {
+		// Check nonce for security.
+		check_ajax_referer( 'change_post_date_nonce', '_ajax_nonce' );
+
+		$postdata = wp_unslash( $_POST );
+
+		// Sanitize and validate input.
+		$orderid = isset( $postdata['orderid'] ) ? absint( $postdata['orderid'] ) : 0;
+
+		if ( $orderid ) {
+			wp_send_json_success(
+				array(
+					'orderid' => update_post_meta( $orderid, '_status_under_review', 'no' ),
+				)
+			);
+		} else {
+			wp_send_json_error( array( 'message' => __( 'Invalid input data', 'woo-weight-report' ) ) );
+		}
+
+		// Stop further execution.
+		wp_die();
+	}
+
+	/**
 	 * Updates the custom meta for marking an order as under review.
 	 *
 	 * This method updates the `_status_under_review` meta key for a specific order
@@ -398,5 +429,38 @@ class WeightReport_Setting extends WeightReport_Admin {
 	 */
 	public function wc_update_custom_meta_blacklist( $order_id ) {
 		update_post_meta( $order_id, '_order_under_blacklist', 'yes' );
+	}
+
+	/**
+	 * Adds custom meta to WooCommerce orders when they are edited for the first time in the admin.
+	 *
+	 * @param int $post_id The ID of the post (order) being saved.
+	 */
+	public function is_first_edit_order( $post_id ) {
+		// Check if it's an update and not an auto-save.
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+
+		// Verify it's a 'shop_order' post type.
+		if ( 'shop_order' !== get_post_type( $post_id ) ) {
+			return;
+		}
+
+		if ( isset( $_POST['review_status'] ) && ! empty( $_POST['review_status'] ) ) { //phpcs:ignore
+			update_post_meta( $post_id, '_status_under_review', 'yes' );
+		}else{
+			update_post_meta( $post_id, '_status_under_review', 'no' );
+		}
+
+		// Check if this is the first time the order is being saved.
+		$custom_meta_key = '_is_first_edit';
+		if ( ! metadata_exists( 'post', $post_id, $custom_meta_key ) ) {
+			// Add your custom meta data.
+			update_post_meta( $post_id, '_status_under_review', 'yes' );
+
+			// Mark that the custom meta has been added.
+			update_post_meta( $post_id, $custom_meta_key, 'yes' );
+		}
 	}
 }
