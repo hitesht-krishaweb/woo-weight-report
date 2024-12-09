@@ -11,7 +11,7 @@
 namespace Woo;
 
 use Woo\WeightReport\Admin\WeightReport_Setting;
-use Woo\WeightReport\Testing_Order\WeightReport_Testing_Order;
+use Woo\WeightReport\Editing_Order\WeightReport_Editing_Order;
 
 /**
  * The core plugin class.
@@ -38,6 +38,6 @@ class WeightReport {
 			basename( WOW_REPORT_ABSPATH ) . '/languages'
 		);
 		new WeightReport_Setting();
-		// new WeightReport_Testing_Order();
+		new WeightReport_Editing_Order();
 	}
 }

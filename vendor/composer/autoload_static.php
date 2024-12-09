@@ -25,6 +25,7 @@ class ComposerStaticInitd1afdc5634dafe4a42ec97ab77988018
         'Woo\\WeightReport' => __DIR__ . '/../..' . '/includes/class-weightreport.php',
         'Woo\\WeightReport\\Admin\\WeightReport_Admin' => __DIR__ . '/../..' . '/includes/admin/class-weightreport-admin.php',
         'Woo\\WeightReport\\Admin\\WeightReport_Setting' => __DIR__ . '/../..' . '/includes/admin/class-weightreport-setting.php',
+        'Woo\\WeightReport\\Editing_Order\\WeightReport_Editing_Order' => __DIR__ . '/../..' . '/includes/admin/class-weightreport-editing-order.php',
         'Woo\\WeightReport\\Table\\Woo_Order_List_Table' => __DIR__ . '/../..' . '/includes/admin/class-woo-order-list-table.php',
         'Woo\\WeightReport\\Testing_Order\\WeightReport_Testing_Order' => __DIR__ . '/../..' . '/includes/admin/class-weightreport-testing-order.php',
         'Woo\\WeightReport\\WeightReport_PDFGenerator' => __DIR__ . '/../..' . '/includes/class-weightreport-pdfgenerator.php',

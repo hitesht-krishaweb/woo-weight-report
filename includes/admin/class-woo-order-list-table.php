@@ -88,6 +88,13 @@ class Woo_Order_List_Table extends \WP_List_Table {
 	 */
 	protected $total_copper_gram = 0;
 
+	/**
+	 * Under View varibale.
+	 *
+	 * @var float
+	 */
+	private $under_review = false;
+
 
 	/**
 	 * Define the column headers for the list table.
@@ -127,6 +134,35 @@ class Woo_Order_List_Table extends \WP_List_Table {
 	}
 
 	/**
+	 * Sets the under-review status.
+	 *
+	 * This method sets the `under_review` property to the specified value.
+	 * Use this to mark an object as being under review.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param bool $status Optional. The status to set. Defaults to false.
+	 */
+	public function set_under_review( $status = false ) {
+		$this->under_review = $status; // Save the value to a class property.
+	}
+
+	/**
+	 * Retrieves the under-review status.
+	 *
+	 * This method returns the value of the `under_review` property.
+	 * Use this to check if an object is marked as being under review.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool The current under-review status.
+	 */
+	public function get_under_review() {
+		return $this->under_review; // Retrieve the current value of the property.
+	}
+
+
+	/**
 	 * Define which columns can be sorted.
 	 *
 	 * @return array Sortable columns.
@@ -153,7 +189,8 @@ class Woo_Order_List_Table extends \WP_List_Table {
 		$this->total_copper_gram   = 0;
 
 		// Define the number of items to display per page.
-		$per_page = $this->get_items_per_page( 'items_per_page', 20 );
+		$per_page_option = $this->get_under_review() ? 'review_per_page' : 'items_per_page';
+		$per_page        = $this->get_items_per_page( $per_page_option, 20 );
 
 		$current_page = $this->get_pagenum();
 		$total_items  = $this->get_total_items_count();
@@ -183,8 +220,13 @@ class Woo_Order_List_Table extends \WP_List_Table {
 	 * Get total number of items (orders).
 	 */
 	public function get_total_items_count() {
-		$current_page   = $this->get_pagenum();
-		$args           = $this->get_query_by_filter( -1, $current_page );
+		$current_page = $this->get_pagenum();
+
+		if ( true !== $this->get_under_review() ) :
+			$args = $this->get_query_by_filter( -1, $current_page );
+		else :
+			$args = $this->get_query_for_review( -1, $current_page );
+		endif;
 		$args['fields'] = 'ids';
 
 		$orders = get_posts( $args );
@@ -204,11 +246,14 @@ class Woo_Order_List_Table extends \WP_List_Table {
 			wp_die( esc_html__( 'Nonce verification failed. Please refresh the page and try again.', 'woo-weight-report' ) );
 		}
 
+		$order_data = wc_get_order( $item['orderid'] );
+
 		// Test order status variable.
-		$_test_order = get_post_meta( $item['orderid'], '_test_order', true );
+		$_test_order  = get_post_meta( $item['orderid'], '_test_order', true );
+		$order_status = $order_data->get_status();
 
 		if ( ! isset( $getdata['pdf'] ) || 'yes' !== $_test_order ) :
-			echo '<tr>';
+			echo '<tr class="order-status-' . esc_attr( $order_status ) . '">';
 			$this->single_row_columns( $item );
 			echo '</tr>';
 		endif;
@@ -216,7 +261,6 @@ class Woo_Order_List_Table extends \WP_List_Table {
 		if ( ! isset( $getdata['pdf'] ) ) :
 
 			echo '<tr class="table-view-pro hidden" id="table-view-' . esc_attr( $item['orderid'] ) . '" >';
-			$order_data = wc_get_order( $item['orderid'] );
 			if ( ! empty( $order_data ) ) :
 				?>
 				<td colspan="<?php echo esc_attr( $this->get_column_count() ); ?>" style="padding-bottom:10px;">
@@ -272,7 +316,11 @@ class Woo_Order_List_Table extends \WP_List_Table {
 	 */
 	public function get_order_data( $per_page = 10, $current_page = 1 ) {
 
-		$args = $this->get_query_by_filter( $per_page, $current_page );
+		if ( true !== $this->get_under_review() ) :
+			$args = $this->get_query_by_filter( $per_page, $current_page );
+		else :
+			$args = $this->get_query_for_review( $per_page, $current_page );
+		endif;
 
 		$orders = get_posts( $args );
 		$data   = array();
@@ -286,7 +334,8 @@ class Woo_Order_List_Table extends \WP_List_Table {
 			$weight_lable   = $this->get_metalname_by_lang();
 
 			// Test order status variable.
-			$_test_order = get_post_meta( $order->ID, '_test_order', true );
+			$_test_order  = get_post_meta( $order->ID, '_test_order', true );
+			$order_status = $order_data->get_status();
 
 			$silver_oz     = $this->get_weight_by_metal( $weight_lable['silver'], 'ounces', $product_weight );
 			$silver_gram   = $this->get_weight_by_metal( $weight_lable['silver'], 'grams', $product_weight );
@@ -297,7 +346,7 @@ class Woo_Order_List_Table extends \WP_List_Table {
 			$copper_oz     = $this->get_weight_by_metal( $weight_lable['copper'], 'ounces', $product_weight );
 			$copper_gram   = $this->get_weight_by_metal( $weight_lable['copper'], 'grams', $product_weight );
 
-			if ( 'yes' !== $_test_order ) :
+			if ( 'yes' !== $_test_order && ( 'processing' === $order_status || 'cancelled' === $order_status ) ) :
 				// Accumulate the total weights for each metal in both ounces and grams.
 				$this->total_silver_oz     += $silver_oz;
 				$this->total_silver_gram   += $silver_gram;
@@ -329,7 +378,6 @@ class Woo_Order_List_Table extends \WP_List_Table {
 				'product'       => '',
 			);
 		}
-
 		return $data;
 	}
 
@@ -395,7 +443,7 @@ class Woo_Order_List_Table extends \WP_List_Table {
 	public function get_query_by_filter( $per_page, $current_page ) {
 		$args = array(
 			'post_type'      => 'shop_order',
-			'post_status'    => array( 'wc-processing', 'wc-completed' ),
+			'post_status'    => array( 'wc-processing' ),
 			'meta_key'       => '_date_paid', //phpcs:ignore
 			'orderby'        => 'meta_value_num',
 			'posts_per_page' => $per_page,
@@ -416,12 +464,31 @@ class Woo_Order_List_Table extends \WP_List_Table {
 			$args['post_status'] = $current_status;
 		endif;
 
+		$meta_query = array(
+			'relation' => 'AND',
+			array(
+				'relation' => 'OR',
+				array(
+					'key'     => '_order_under_blacklist',
+					'value'   => 'yes',
+					'compare' => '!=', // Not equal to 'yes'.
+				),
+				array(
+					'key'     => '_order_under_blacklist',
+					'compare' => 'NOT EXISTS', // Include if the meta key doesn't exist.
+				),
+				array(
+					'key'     => '_order_under_blacklist',
+					'value'   => '', // Include if the meta value is empty.
+					'compare' => '=',
+				),
+			),
+		);
+
 		if ( isset( $requestdata['filter_month'] ) && ! empty( $requestdata['filter_month'] ) ) {
 			$today       = gmdate( 'Y-m-d' );
 			$month_start = gmdate( 'Y-m-01' );
 			$year_start  = gmdate( 'Y-01-01' );
-
-			$meta_query = array(); // Initialize meta query array.
 
 			switch ( $requestdata['filter_month'] ) {
 				case 'current_month':
@@ -501,13 +568,38 @@ class Woo_Order_List_Table extends \WP_List_Table {
 					endif;
 					break;
 			}
-
-			if ( ! empty( $meta_query ) ) {
-				$args['meta_query'] = $meta_query; //phpcs:ignore
-			}
+		}
+		if ( ! empty( $meta_query ) ) {
+			$args['meta_query'] = $meta_query; //phpcs:ignore
 		}
 
 		return apply_filters( 'get_query_by_filter_args', $args );
+	}
+
+	/**
+	 * Get WP query arguments for filtering WooCommerce orders.
+	 *
+	 * @param int $per_page     Number of orders per page.
+	 * @param int $current_page Current page number.
+	 * @return array Query arguments.
+	 */
+	public function get_query_for_review( $per_page, $current_page ) {
+
+		$args = array(
+			'post_type'      => 'shop_order',
+			'post_status'    => array( 'wc-cancelled' ),
+			'posts_per_page' => $per_page,
+			'paged'          => $current_page,
+			'meta_query'     => array( //phpcs:ignore
+				array(
+					'key'     => '_status_under_review',
+					'value'   => 'yes',
+					'compare' => '=', // Equal to 'yes'.
+				),
+			),
+		);
+
+		return apply_filters( 'get_query_for_review_args', $args );
 	}
 
 	/**
@@ -577,7 +669,7 @@ class Woo_Order_List_Table extends \WP_List_Table {
 	 * @param string $which The location of the extra navigation ('top' or 'bottom').
 	 */
 	public function extra_tablenav( $which ) {
-		if ( 'top' === $which ) {
+		if ( 'top' === $which && true !== $this->get_under_review() ) {
 
 			$requestdata = wp_unslash( $_GET );
 			$nonce       = isset( $requestdata['ordernonce'] ) && ! empty( $requestdata['ordernonce'] ) ? $requestdata['ordernonce'] : '';
@@ -702,7 +794,7 @@ class Woo_Order_List_Table extends \WP_List_Table {
 	/**
 	 * Get data by order.
 	 *
-	 * @param object $order The current order objec.
+	 * @param object $order The current order object.
 	 * @return array return weight.
 	 */
 	public function order_weight_by_product( $order ) {
@@ -794,16 +886,15 @@ class Woo_Order_List_Table extends \WP_List_Table {
 
 		// phpcs:disable
 		if ( ! is_array( $months ) ) {
-			$extra_checks = "AND post_status != 'auto-draft'";
-			$extra_checks .= "AND post_status != 'wc-on-hold'";
-			$extra_checks .= "AND post_status != 'wc-pending'";
-			$extra_checks .= "AND post_status != 'wc-cancelled'";
-			$extra_checks .= "AND post_status != 'wc-failed'";
-			$extra_checks .= "AND post_status != 'wc-checkout-draft'";
-			if ( ! isset( $_GET['post_status'] ) || 'trash' !== $_GET['post_status'] ) {
-				$extra_checks .= " AND post_status != 'trash'";
-			} elseif ( isset( $_GET['post_status'] ) ) {
-				$extra_checks = $wpdb->prepare( ' AND post_status = %s', $_GET['post_status'] );
+			$extra_checks = "AND post_status NOT IN ('auto-draft', 'wc-on-hold', 'wc-pending', 'wc-failed', 'wc-checkout-draft', 'wc-cancelled')";
+			$allowed_statuses = array('wc-processing' );
+
+			if (isset($_GET['post_status']) && 'trash' === $_GET['post_status']) {
+				$extra_checks = $wpdb->prepare(' AND post_status = %s', $_GET['post_status']);
+			} elseif (isset($_GET['post_status'])) {
+				$extra_checks = $wpdb->prepare(' AND post_status = %s', sanitize_text_field($_GET['post_status']));
+			} else {
+				$extra_checks .= $wpdb->prepare(" AND post_status IN (%s, %s)", $allowed_statuses[0], $allowed_statuses[1] );
 			}
 
 			$months = $wpdb->get_results(
