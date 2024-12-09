@@ -37,6 +37,9 @@ class WeightReport_Setting extends WeightReport_Admin {
 		add_action( 'admin_init', array( $this, 'ganerate_order_table_pdf' ) );
 		add_action( 'wp_ajax_change_order_paiddate', array( $this, 'handle_change_order_paiddate' ) );
 		add_action( 'wp_ajax_nopriv_change_order_paiddate', array( $this, 'handle_change_order_paiddate' ) );
+		add_action( 'woocommerce_order_status_processing_to_cancelled', array( $this, 'wc_update_custom_meta' ) );
+		add_action( 'woocommerce_order_status_on-hold_to_cancelled', array( $this, 'wc_update_custom_meta' ) );
+		add_action( 'woocommerce_order_status_cancelled_to_processing', array( $this, 'wc_update_custom_meta_blacklist' ) );
 	}
 
 	/**
@@ -48,13 +51,12 @@ class WeightReport_Setting extends WeightReport_Admin {
 	 * @param WP_Screen $screen The current screen object.
 	 */
 	public function check_and_init_hooks( $screen ) {
-
 		// Set screen option only for your custom admin page.
-		if ( 'woocommerce_page_woo-weight-report' !== $screen->id ) {
+		if ( 'woocommerce_page_woo-weight-report' !== $screen->id && 'woocommerce_page_woo-under-review' !== $screen->id ) {
 			return;
 		}
-
 		add_action( 'load-woocommerce_page_woo-weight-report', array( $this, 'weight_report_add_screen_options' ) );
+		add_action( 'load-woocommerce_page_woo-under-review', array( $this, 'weight_report_add_screen_options_review' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_order_table_script' ) );
 	}
 
@@ -64,6 +66,14 @@ class WeightReport_Setting extends WeightReport_Admin {
 	 * @since 1.0.0
 	 */
 	public function admin_menu_setting() {
+		add_submenu_page(
+			'woocommerce',
+			__( 'Under Review', 'woo-weight-report' ),
+			__( 'Under Review', 'woo-weight-report' ),
+			'manage_options',
+			'woo-under-review',
+			array( &$this, 'under_review_render_page' )
+		);
 		add_submenu_page(
 			'woocommerce',
 			__( 'Weight Report', 'woo-weight-report' ),
@@ -93,6 +103,24 @@ class WeightReport_Setting extends WeightReport_Admin {
 	}
 
 	/**
+	 * Save the screen option for items per page.
+	 *
+	 * This function is hooked into the 'set-screen-option' filter to save
+	 * the user's choice for the number of items per page. It checks if
+	 * the current option is 'items_per_page_option' and, if so, returns the
+	 * value cast to an integer. Otherwise, it returns the original status.
+	 *
+	 * @param bool|int $status The current screen option status.
+	 * @param string   $option The name of the option to update.
+	 * @param int      $value  The value to be saved for the option.
+	 *
+	 * @return int The updated value for the screen option.
+	 */
+	public function order_under_review_set_screen_option_setting( $status, $option, $value ) {
+		return 'review_per_page' === $option ? absint( $value ) : $status;
+	}
+
+	/**
 	 * Add screen option for items per page.
 	 */
 	public function weight_report_add_screen_options() {
@@ -104,6 +132,21 @@ class WeightReport_Setting extends WeightReport_Admin {
 				'label'   => __( 'Items per page', 'woo-weight-report' ),
 				'default' => 10,
 				'option'  => 'items_per_page',
+			)
+		);
+	}
+
+	/**
+	 * Add screen option for items per page.
+	 */
+	public function weight_report_add_screen_options_review() {
+		// Set screen option only for your custom admin page.
+		add_screen_option(
+			'per_page',
+			array(
+				'label'   => __( 'Items per page', 'woo-weight-report' ),
+				'default' => 10,
+				'option'  => 'review_per_page',
 			)
 		);
 	}
@@ -122,6 +165,7 @@ class WeightReport_Setting extends WeightReport_Admin {
 
 		if ( class_exists( 'Woo\WeightReport\Table\Woo_Order_List_Table' ) ) :
 			$orders_table = new Woo_Order_List_Table();
+			$orders_table->set_under_review( false );
 			$orders_table->prepare_items();
 			?>
 			<div class="wrap">
@@ -130,6 +174,46 @@ class WeightReport_Setting extends WeightReport_Admin {
 			$orders_table->display();
 			?>
 			</div>
+			<style>
+				.striped>tbody tr.order-status-cancelled {
+					background-color: #FF0000;
+				}
+				tr.order-status-cancelled .paiddate_data {
+					pointer-events: none;
+				}
+			</style>
+			<?php
+		endif;
+	}
+
+	/**
+	 * Render HTML for woo weight report.
+	 *
+	 * @since 1.0.0
+	 */
+	public static function under_review_render_page() {
+
+		// Check that the user has the appropriate capability.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		if ( class_exists( 'Woo\WeightReport\Table\Woo_Order_List_Table' ) ) :
+			$orders_table = new Woo_Order_List_Table();
+			$orders_table->set_under_review( true );
+			$orders_table->prepare_items();
+			?>
+			<div class="wrap">
+				<h2><?php esc_html_e( 'Under Review Orders', 'woo-weight-report' ); ?></h2>
+			<?php
+			$orders_table->display();
+			?>
+			</div>
+			<style>
+				tr.order-status-cancelled .paiddate_data {
+					pointer-events: none;
+				}
+			</style>
 			<?php
 		endif;
 	}
@@ -241,6 +325,19 @@ class WeightReport_Setting extends WeightReport_Admin {
 		$new_date = isset( $postdata['new_date'] ) ? sanitize_text_field( $postdata['new_date'] ) : '';
 		$new_time = isset( $postdata['new_time'] ) ? sanitize_text_field( $postdata['new_time'] ) : '';
 
+		if ( 'wc-processing' !== get_post_status( $orderid ) ) {
+			wp_send_json_error(
+				array(
+					'verify_status' => true,
+					'message'       => sprintf(
+						'Current order status is %s and has not been updated.',
+						get_post_status( $orderid )
+					),
+				)
+			);
+			wp_die();
+		}
+
 		if ( $orderid && $new_date && $new_time ) {
 			// Combine date and time, and try converting to timestamp.
 			$datetime_string = $new_date . ' ' . $new_time;
@@ -248,7 +345,7 @@ class WeightReport_Setting extends WeightReport_Admin {
 
 			// Check if the timestamp is valid.
 			if ( false === $timestamp ) {
-				wp_send_json_error( array( 'message' => 'Invalid date or time format' ) );
+				wp_send_json_error( array( 'message' => __( 'Invalid date or time format', 'woo-weight-report' ) ) );
 			}
 
 			$order = wc_get_order( $orderid );
@@ -258,18 +355,48 @@ class WeightReport_Setting extends WeightReport_Admin {
 				$order->save();
 				wp_send_json_success(
 					array(
+						'verify_status'   => false,
 						'orderid'         => $orderid,
 						'datetime_string' => $datetime_string,
 					)
 				);
 			} else {
-				wp_send_json_error( array( 'message' => 'Date not updated in order' ) );
+				wp_send_json_error( array( 'message' => __( 'Date not updated in order', 'woo-weight-report' ) ) );
 			}
 		} else {
-			wp_send_json_error( array( 'message' => 'Invalid input data' ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid input data', 'woo-weight-report' ) ) );
 		}
 
 		// Stop further execution.
 		wp_die();
+	}
+
+	/**
+	 * Updates the custom meta for marking an order as under review.
+	 *
+	 * This method updates the `_status_under_review` meta key for a specific order
+	 * with the value `'yes'`. This is used to indicate that the order is currently
+	 * under review.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $order_id The ID of the order to update.
+	 */
+	public function wc_update_custom_meta( $order_id ) {
+		update_post_meta( $order_id, '_status_under_review', 'yes' );
+	}
+
+	/**
+	 * Updates the custom meta for marking an order as blacklisted.
+	 *
+	 * This method updates the `_order_under_blacklist` meta key for a specific order
+	 * with the value `'yes'`. This is used to indicate that the order is flagged as blacklisted.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $order_id The ID of the order to update.
+	 */
+	public function wc_update_custom_meta_blacklist( $order_id ) {
+		update_post_meta( $order_id, '_order_under_blacklist', 'yes' );
 	}
 }

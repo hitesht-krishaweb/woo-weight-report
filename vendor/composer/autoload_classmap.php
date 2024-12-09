@@ -10,6 +10,7 @@ return array(
     'Woo\\WeightReport' => $baseDir . '/includes/class-weightreport.php',
     'Woo\\WeightReport\\Admin\\WeightReport_Admin' => $baseDir . '/includes/admin/class-weightreport-admin.php',
     'Woo\\WeightReport\\Admin\\WeightReport_Setting' => $baseDir . '/includes/admin/class-weightreport-setting.php',
+    'Woo\\WeightReport\\Editing_Order\\WeightReport_Editing_Order' => $baseDir . '/includes/admin/class-weightreport-editing-order.php',
     'Woo\\WeightReport\\Table\\Woo_Order_List_Table' => $baseDir . '/includes/admin/class-woo-order-list-table.php',
     'Woo\\WeightReport\\Testing_Order\\WeightReport_Testing_Order' => $baseDir . '/includes/admin/class-weightreport-testing-order.php',
     'Woo\\WeightReport\\WeightReport_PDFGenerator' => $baseDir . '/includes/class-weightreport-pdfgenerator.php',
